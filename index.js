@@ -41,23 +41,21 @@ async function run() {
         const reviewCollection = client.db('cisco-chemicals-inc').collection('reviews');
         const usersCollection = client.db('cisco-chemicals-inc').collection('users');
         const orderCollection = client.db('cisco-chemicals-inc').collection('orders');
-        // const productsCollection = client.db('cisco-chemicals-inc').collection('products');
         // const historyCollection = client.db('cisco-chemicals-inc').collection('history');
         // const adminCollection = client.db('cisco-chemicals-inc').collection('admin');
-        // console.log("Connected to MongoDB");
 
 
         //verifyAdmin =>
-        const verifyAdmin = async (req, res, next) => {
-            const requester = req.decoded.email;
-            const requesterAccount = await usersCollection.findOne({ email: requester });
-            if (requesterAccount.role === 'admin') {
-                next()
-            }
-            else {
-                res.status(403).send({ message: 'forbidden access' })
-            }
-        }
+        // const verifyAdmin = async (req, res, next) => {
+        //     // const requester = req.decoded.email;
+        //     const requesterAccount = await usersCollection.findOne({ email: requester });
+        //     if (requesterAccount.role === 'admin') {
+        //         next()
+        //     }
+        //     else {
+        //         res.status(403).send({ message: 'forbidden access' })
+        //     }
+        // }
         //Product API ==>
         app.get('/product', async (req, res) => {
             const query = {}
@@ -65,6 +63,8 @@ async function run() {
             const services = await cursor.toArray()
             res.send(services)
         })
+        //Add Product API ==>
+
 
         //Individual Product API ==>
         app.get('/product/:id', async (req, res) => {
@@ -81,24 +81,35 @@ async function run() {
             res.send(result)
         })
         // myOrder collection API =>
-        app.get('/order', async (req, res) => {
+        app.get('/order', verifyJWT, async (req, res) => {
             const email = req.query.email
             const query = { email: email }
             const cursor = orderCollection.find(query)
             const services = await cursor.toArray()
             res.send(services)
         })
+        //order cancel API =>
+        app.delete('/order/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: ObjectId(id) }
+            const result = await orderCollection.deleteOne(query)
+            res.json(result)
+        })
+
         //review API ==>
         app.get('/reviews', async (req, res) => {
             const users = await reviewCollection.find().toArray();
             res.send(users);
         })
 
+        //add a review API ==>
+
         //User API ==>
-        app.get('/user', async (req, res) => {
+        app.get('/user', verifyJWT, async (req, res) => {
             const users = await usersCollection.find().toArray();
             res.send(users);
         })
+        //update User ==>
         app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
             const user = req.body;
@@ -108,12 +119,12 @@ async function run() {
                 $set: user,
             }
             const results = await usersCollection.updateOne(filter, updateDoc, option);
-            // const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '14d' });
-            res.send(results );
+            const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30d' });
+            res.send({ results, token });
         })
 
         //Verify for admin ==>
-        app.get('/admin/:email', async (req, res) => {
+        app.get('/admin/:email',  async (req, res) => {
             const email = req.params.email
             const user = await usersCollection.findOne({ email: email })
             const isAdmin = user.role === 'admin'
@@ -122,7 +133,7 @@ async function run() {
 
         //API to Make an Admin
 
-        app.put('/user/admin/:email', verifyJWT, verifyAdmin, async (req, res) => {
+        app.put('/user/admin/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
             const filter = { email: email };
             const updateDoc = {
@@ -131,19 +142,13 @@ async function run() {
             const results = await usersCollection.updateOne(filter, updateDoc);
             res.send(results);
         })
-
-
     }
     finally {
 
     }
 }
 run().catch(console.dir);
-// client.connect(err => {
-//   const collection = client.db("test").collection("devices");
-//   // perform actions on the collection object
-//   client.close();
-// });
+
 
 
 
