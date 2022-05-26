@@ -14,10 +14,10 @@
 
 ## Acknowledgements
 
-- [Portfolio](https://cisco-chemicals-inc.web.app/portfolio)
 - [Sign up Now](https://cisco-chemicals-inc.web.app/signup)
 - [Checkout Packages  ](https://brite-express-inc.web.app/checkout)
 - [Read Our Blogs ](https://cisco-chemicals-inc.web.app/blog)
+- [Portfolio](https://cisco-chemicals-inc.web.app/portfolio)
 - [About us](https://cisco-chemicals-inc.web.app/about)
 
 
