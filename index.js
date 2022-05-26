@@ -188,7 +188,7 @@ async function run() {
             const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30d' });
             res.send({ results, token });
         })
-        app.patch('/user/:email', async (req, res) => {
+        app.patch('/user/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
             const profile = req.body;
             const filter = { email: email };
