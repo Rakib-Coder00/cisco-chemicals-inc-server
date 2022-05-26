@@ -17,8 +17,6 @@ app.use(express.json());
 
 
 
-
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.0mxpd.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
@@ -47,8 +45,6 @@ async function run() {
         const usersCollection = client.db('cisco-chemicals-inc').collection('users');
         const orderCollection = client.db('cisco-chemicals-inc').collection('orders');
         const paymentCollection = client.db('cisco-chemicals-inc').collection('payments');
-        // const historyCollection = client.db('cisco-chemicals-inc').collection('history');
-        // const adminCollection = client.db('cisco-chemicals-inc').collection('admin');
 
 
         //verifyAdmin =>
@@ -167,7 +163,6 @@ async function run() {
         })
 
 
-
         
         //User API ==>
         app.get('/user', verifyJWT, async (req, res) => {
@@ -213,7 +208,6 @@ async function run() {
         })
 
         //API to Make an Admin
-
         app.put('/user/admin/:email', verifyJWT, verifyAdmin, async (req, res) => {
             const email = req.params.email;
             const filter = { email: email };
@@ -229,8 +223,6 @@ async function run() {
     }
 }
 run().catch(console.dir);
-
-
 
 
 app.get('/', (req, res) => {
