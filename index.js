@@ -87,8 +87,6 @@ async function run() {
             const updatedBooking = await orderCollection.updateOne(filter, updatedDoc);
             res.send(updatedBooking);
         })
-      
-
         //Get ALL Product API ==>
         app.get('/product', async (req, res) => {
             const query = {}
@@ -115,9 +113,6 @@ async function run() {
             const service = await productCollection.findOne(query)
             res.send(service)
         })
-
-
-
         //Order Place API ==>
         app.post('/order', async (req, res) => {
             const order = req.body
@@ -146,9 +141,6 @@ async function run() {
             const order = await orderCollection.findOne(query)
             res.send(order)
         })
-
-
-
         //review API ==>
         app.get('/reviews', async (req, res) => {
             const users = await reviewCollection.find().toArray();
@@ -161,9 +153,6 @@ async function run() {
             const inserted = await reviewCollection.insertOne(review)
             res.send(inserted)
         })
-
-
-        
         //User API ==>
         app.get('/user', verifyJWT, async (req, res) => {
             const users = await usersCollection.find().toArray();
@@ -223,7 +212,6 @@ async function run() {
     }
 }
 run().catch(console.dir);
-
 
 app.get('/', (req, res) => {
     res.send('Server is running...✔️');
