@@ -97,8 +97,8 @@ async function run() {
         app.get('/product', async (req, res) => {
             const query = {}
             const cursor = productCollection.find(query)
-            const services = await cursor.toArray()
-            res.send(services)
+            const products = await cursor.toArray()
+            res.send(products.reverse())
         })
         //Add Product API ==>
         app.post('/product', verifyJWT, verifyAdmin, async (req, res) => {
@@ -156,11 +156,15 @@ async function run() {
         //review API ==>
         app.get('/reviews', async (req, res) => {
             const users = await reviewCollection.find().toArray();
-            res.send(users);
+            res.send(users.reverse());
         })
 
         //add a review API ==>
-
+        app.post('/reviews', verifyJWT, async (req, res) => {
+            const review = req.body
+            const inserted = await reviewCollection.insertOne(review)
+            res.send(inserted)
+        })
 
 
 
@@ -169,6 +173,12 @@ async function run() {
         app.get('/user', verifyJWT, async (req, res) => {
             const users = await usersCollection.find().toArray();
             res.send(users);
+        })
+        app.get('/user/:email', async (req, res) => {
+            const email = req.params.email
+            const query = { email: email }
+            const user = await usersCollection.findOne(query)
+            res.send(user)
         })
         //update User ==>
         app.put('/user/:email', async (req, res) => {
@@ -182,6 +192,16 @@ async function run() {
             const results = await usersCollection.updateOne(filter, updateDoc, option);
             const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30d' });
             res.send({ results, token });
+        })
+        app.patch('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            const profile = req.body;
+            const filter = { email: email };
+            const updateDoc = {
+                $set: profile,
+            }
+            const results = await usersCollection.updateOne(filter, updateDoc);
+            res.send(results);
         })
 
         //Verify for admin ==>
